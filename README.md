@@ -3,7 +3,7 @@
 This project is a simple counter app, with a CI/CD pipeline.
 > counter-app don't work but the CI/CD pipeline work.
 
-## How install and run the project
+## How to install and run the project
 
 you need to have a [gitlab](https://gitlab.com) instance on your machine, and a second one for the CI/CD pipeline with gitlab-runner installed with docker added to the runner.
 
