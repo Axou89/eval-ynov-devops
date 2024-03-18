@@ -1,0 +1,27 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build-image
+  - publish-image
+  - deploy-app
+
+build-image-job:       
+  stage: build-image
+  script:
+    - cd counter-app
+    - docker image prune -f	
+    - docker build -t counter-app:$CI_COMMIT_SHORT_SHA .
+    - docker images
+
+push-image-job:   
+  stage: publish-image
+  script:
+    - docker tag counter-app:$CI_COMMIT_SHORT_SHA tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker push tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+
+deploy-app-job:      
+  stage: deploy-app 
+  environment: production
+  script:
+    - docker pull tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker rm -f counter-app || true
+    - docker run -d -p 80:80 --name counter-app tot0p/counter-app:$CI_COMMIT_SHORT_SHA
