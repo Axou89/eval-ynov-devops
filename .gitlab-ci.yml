@@ -21,5 +21,13 @@ push-image-job:
 deploy-app-job:      
   stage: deploy-app 
   environment: production
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )' 
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $VM_IPADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
   script:
-    - sshpass -p $SSH_PASSWORD ssh $SSH_USER@$VM_IPADDRESS "docker pull $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA && ( docker rm -f counter-app || true ) && docker run -d -p 80:5000 --name counter-app $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
+    - ssh $SSH_USER@$VM_IPADDRESS "docker pull $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA && ( docker rm -f counter-app || true ) && docker run -d -p 80:5000 --name counter-app $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
