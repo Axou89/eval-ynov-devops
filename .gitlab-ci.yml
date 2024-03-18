@@ -14,14 +14,14 @@ build-image-job:
 push-image-job:   
   stage: publish-image
   script:
-    - docker tag counter-app:$CI_COMMIT_SHORT_SHA tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker tag counter-app:$CI_COMMIT_SHORT_SHA $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    - docker push tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA
 
 deploy-app-job:      
   stage: deploy-app 
   environment: production
   script:
-    - docker pull tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker pull $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA
     - docker rm -f counter-app || true
-    - docker run -d -p 80:80 --name counter-app tot0p/counter-app:$CI_COMMIT_SHORT_SHA
+    - docker run -d -p 80:80 --name counter-app $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA
