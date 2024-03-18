@@ -30,9 +30,8 @@ deploy-app-job:
   - ssh-keyscan $VM_IPADDRESS >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   script:
-    - ssh $SSH_USER@$VM_IPADDRESS "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-    - ssh $SSH_USER@$VM_IPADDRESS "docker pull $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
-    - ssh $SSH_USER@$VM_IPADDRESS "docker stop \$(docker ps -a -q)"
-    - ssh $SSH_USER@$VM_IPADDRESS "docker rm \$(docker ps -a -q)"
-    - ssh $SSH_USER@$VM_IPADDRESS "docker run -d -p 80:5000 $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
+    - ssh $SSH_USER@$VM_IPADDRESS "sudo docker pull $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
+    - ssh $SSH_USER@$VM_IPADDRESS "sudo docker stop \$(docker ps -a -q) || true"
+    - ssh $SSH_USER@$VM_IPADDRESS "sudo docker rm \$(docker ps -a -q) || true"
+    - ssh $SSH_USER@$VM_IPADDRESS "sudo docker run -d -p 80:5000 $DOCKER_USERNAME/counter-app:$CI_COMMIT_SHORT_SHA"
     
